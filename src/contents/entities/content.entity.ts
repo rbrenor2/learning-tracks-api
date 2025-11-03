@@ -5,4 +5,6 @@ export class Content {
     description: string
     duration: number
     isCompleted: boolean
+    createdAt: Date
+    updatedAt: Date
 }

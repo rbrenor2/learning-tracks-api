@@ -1,0 +1,33 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table contents {
+  id integer [pk, increment]
+  url string [unique, not null]
+  title string [not null]
+  description string
+  duration integer
+  completed bool [default: false]
+  created_at timestamp
+}
+
+Table tracks {
+  id integer [pk, increment]
+  name string [not null, unique]
+  created_at timestamp
+}
+
+Table contents_tracks {
+  id_content integer [not null]
+  id_track integer [not null]
+  position integer [not null]
+  created_at timestamp 
+
+  indexes {
+    (id_content, id_track) [pk]
+    (id_track, position)
+  }
+}
+
+Ref: contents_tracks.id_content > contents.id
+Ref: contents_tracks.id_track > tracks.id

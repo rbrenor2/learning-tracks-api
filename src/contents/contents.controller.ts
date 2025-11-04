@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ContentsService } from './contents.service';
 import { CreateContentDto } from './dto/create-content.dto';
 import { UpdateContentDto } from './dto/update-content.dto';
@@ -13,8 +13,8 @@ export class ContentsController {
   }
 
   @Get()
-  findAll() {
-    return this.contentsService.findAll();
+  findAll(@Query('search') search: string, @Query('pageSize') pageSize: number, @Query('pageNumber') pageNumber: number) {
+    return this.contentsService.findAll({ search, pageSize, pageNumber });
   }
 
   @Get(':id')

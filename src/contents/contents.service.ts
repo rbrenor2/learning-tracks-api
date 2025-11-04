@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateContentDto } from './dto/create-content.dto';
 import { UpdateContentDto } from './dto/update-content.dto';
 import { YoutubeService } from 'src/youtube/youtube.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Content } from './entities/content.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
+import { FindContentDto } from './dto/find-content.dto';
+import { buildPaginationOptions } from 'src/common/helpers/pagination.helper';
+import { parseISO8601ToSeconds } from 'src/common/helpers/time.helper';
 
 @Injectable()
 export class ContentsService {
@@ -16,7 +19,7 @@ export class ContentsService {
 
   async create(createContentDto: CreateContentDto) {
     const videoData = await this.youtubeService.fetchVideoData(createContentDto.videoId)
-    const parsedDuration = this.parseISO8601ToSeconds(videoData.duration)
+    const parsedDuration = parseISO8601ToSeconds(videoData.duration)
 
     const content = this.contentRepository.create({
       ...videoData,
@@ -26,29 +29,45 @@ export class ContentsService {
     return await this.contentRepository.save(content);
   }
 
-  findAll() {
-    return `This action returns all contents`;
+  async findAll(dto: FindContentDto) {
+    const where = dto.search && dto.search.trim() !== '' ? [
+      { title: ILike(`%${dto.search}%`) },
+      { description: ILike(`%${dto.search}%`) },
+    ] : undefined
+
+    const options = buildPaginationOptions({ pageNumber: dto.pageNumber, pageSize: dto.pageSize })
+
+    const [results, total] = await this.contentRepository.findAndCount(
+      {
+        where,
+        take: options.take,
+        skip: options.skip,
+        order: { createdAt: 'DESC' }
+      },
+    )
+
+    return { results, total };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} content`;
+  async findOne(id: number) {
+    const result = await this.contentRepository.findOneBy({ id })
+
+    if (!result) {
+      throw new NotFoundException()
+    }
+
+    return result;
   }
 
   update(id: number, updateContentDto: UpdateContentDto) {
     return `This action updates a #${id} content`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} content`;
-  }
+  async remove(id: number) {
+    const { affected } = await this.contentRepository.delete(id)
 
-  private parseISO8601ToSeconds(duration: string): number {
-    const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+    if (!affected) throw new NotFoundException()
 
-    const hours = parseInt(match?.[1] || '0', 10);
-    const minutes = parseInt(match?.[2] || '0', 10);
-    const seconds = parseInt(match?.[3] || '0', 10);
-
-    return hours * 3600 + minutes * 60 + seconds;
+    return;
   }
 }

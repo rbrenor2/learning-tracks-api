@@ -7,7 +7,7 @@ export class Content {
     id: number;
 
     @Column({ unique: true, nullable: false })
-    url: string;
+    videoId: string;
 
     @Column({ nullable: false })
     title: string;

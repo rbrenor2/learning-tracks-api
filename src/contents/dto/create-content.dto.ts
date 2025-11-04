@@ -1,3 +1,3 @@
 export class CreateContentDto {
-    url: string
+    videoId: string
 }

@@ -10,7 +10,6 @@ import { Track } from './tracks/entities/track.entity';
 @Module({
   imports: [ContentsModule, TracksModule,
     ConfigModule.forRoot({ isGlobal: true }),
-
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,

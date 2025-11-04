@@ -18,6 +18,9 @@ It will be responsible for managing a few entities like:
 ## DB Schema
 - Use your preferred .dbml extension or go to dbdiagram.io and just paste this code.
 
+## Environment
+- Only the complete database url is needed in the following variable: DATABASE_URL
+
 ## Project setup
 
 ```bash

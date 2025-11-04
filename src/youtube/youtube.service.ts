@@ -2,19 +2,27 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { YoutubeVideoData } from './entities/youtube-video-data.entity';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class YoutubeService {
-    youtubeApiKey = process.env.YOUTUBE_API_KEY
-    youtubeApiBaseUrl = process.env.YOUTUBE_API_BASE_URL
+    private readonly youtubeApiKey: string;
+    private readonly youtubeApiBaseUrl: string;
 
-    constructor(private readonly http: HttpService) { }
+    constructor(private readonly http: HttpService, private readonly configService: ConfigService) {
+        this.youtubeApiKey = this.configService.getOrThrow<string>('YOUTUBE_API_KEY');
+        this.youtubeApiBaseUrl = this.configService.getOrThrow<string>('YOUTUBE_API_BASE_URL');
+    }
 
     async fetchVideoData(videoId: string): Promise<YoutubeVideoData> {
-        const parametersPart = "snippet,contentDetails"
-        const url = `${this.youtubeApiBaseUrl}?id=${videoId}&part=${parametersPart}&key=${this.youtubeApiKey}`
+        const params = {
+            id: videoId,
+            part: "snippet,contentDetails",
+            key: this.youtubeApiKey
+        }
+
         const response = await firstValueFrom(
-            this.http.get(url)
+            this.http.get(this.youtubeApiBaseUrl, { params })
         )
 
         const data = response.data?.items[0]

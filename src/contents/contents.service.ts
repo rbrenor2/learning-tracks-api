@@ -5,9 +5,9 @@ import { YoutubeService } from 'src/youtube/youtube.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Content } from './entities/content.entity';
 import { ILike, Repository } from 'typeorm';
-import { FindContentDto } from './dto/find-content.dto';
 import { buildPaginationOptions } from 'src/common/helpers/pagination.helper';
 import { parseISO8601ToSeconds } from 'src/common/helpers/time.helper';
+import { FindDto } from 'src/common/dto/find.dto';
 
 @Injectable()
 export class ContentsService {
@@ -29,10 +29,10 @@ export class ContentsService {
     return await this.repo.save(content);
   }
 
-  async findAll(dto: FindContentDto) {
-    const where = dto.search && dto.search.trim() !== '' ? [
-      { title: ILike(`%${dto.search}%`) },
-      { description: ILike(`%${dto.search}%`) },
+  async findAll(dto: FindDto) {
+    const where = dto.q && dto.q.trim() !== '' ? [
+      { title: ILike(`%${dto.q}%`) },
+      { description: ILike(`%${dto.q}%`) },
     ] : undefined
 
     const options = buildPaginationOptions({ pageNumber: dto.pageNumber, pageSize: dto.pageSize })

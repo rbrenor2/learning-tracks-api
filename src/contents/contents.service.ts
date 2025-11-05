@@ -8,11 +8,14 @@ import { ILike, Repository } from 'typeorm';
 import { buildPaginationOptions } from 'src/common/helpers/pagination.helper';
 import { parseISO8601ToSeconds } from 'src/common/helpers/time.helper';
 import { FindDto } from 'src/common/dto/find.dto';
+import { TracksService } from 'src/tracks/tracks.service';
+import { buildDbErrorMessage, handleHttpError } from 'src/common/helpers/errors.helper';
 
 @Injectable()
 export class ContentsService {
   constructor(
     private youtubeService: YoutubeService,
+    private trackService: TracksService,
     @InjectRepository(Content)
     private readonly repo: Repository<Content>
   ) { }
@@ -26,7 +29,15 @@ export class ContentsService {
       duration: parsedDuration
     })
 
-    return await this.repo.save(content);
+    if (createContentDto.tracks && createContentDto.tracks.length > 0) {
+      this.trackService.create(createContentDto.tracks)
+    }
+
+    try {
+      return await this.repo.save(content);
+    } catch (error) {
+      handleHttpError(409, buildDbErrorMessage(error))
+    }
   }
 
   async findAll(dto: FindDto) {

@@ -4,11 +4,13 @@ import { ContentsController } from './contents.controller';
 import { YoutubeModule } from 'src/youtube/youtube.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Content } from './entities/content.entity';
+import { TracksModule } from 'src/tracks/tracks.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Content]),
-    YoutubeModule
+    YoutubeModule,
+    TracksModule
   ],
   controllers: [ContentsController],
   providers: [ContentsService],

@@ -1,3 +1,1 @@
-export class CreateTrackDto {
-    name: string
-}
+export type CreateTrackDto = string[]

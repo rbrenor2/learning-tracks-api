@@ -4,10 +4,10 @@ import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
 import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { hasSpecialChars } from 'src/common/helpers/string.helper';
-import { handleHttpError } from 'src/common/helpers/errors.helper';
+import { buildDbErrorMessage, handleHttpError } from 'src/common/helpers/errors.helper';
 import { FindDto } from 'src/common/dto/find.dto';
 import { buildPaginationOptions } from 'src/common/helpers/pagination.helper';
+import { hasSpecialChars } from 'src/common/helpers/string.helper';
 
 @Injectable()
 export class TracksService {
@@ -15,14 +15,22 @@ export class TracksService {
     @InjectRepository(Track)
     private readonly repo: Repository<Track>
   ) { }
+
   async create(createTrackDto: CreateTrackDto) {
-    if (hasSpecialChars(createTrackDto.name)) {
-      handleHttpError(400, "Field contains unallowed characters")
+    const foundSpecialChars = createTrackDto.find((track: string) => hasSpecialChars(track))
+
+    if (foundSpecialChars) {
+      handleHttpError(400, "Track contains unallowed characters")
     }
 
-    const track = this.repo.create({ name: createTrackDto.name })
+    const tracks = createTrackDto.map((track: string) => this.repo.create({ name: track }))
 
-    return await this.repo.save(track);
+    try {
+      await this.repo.createQueryBuilder().insert().values(tracks).execute();
+    } catch (error) {
+      handleHttpError(409, buildDbErrorMessage(error))
+    }
+    return
   }
 
   async findAll(dto: FindDto) {

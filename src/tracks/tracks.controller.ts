@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { TracksService } from './tracks.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 
 @Controller('tracks')
 export class TracksController {
-  constructor(private readonly tracksService: TracksService) {}
+  constructor(private readonly tracksService: TracksService) { }
 
   @Post()
   create(@Body() createTrackDto: CreateTrackDto) {
@@ -13,8 +13,8 @@ export class TracksController {
   }
 
   @Get()
-  findAll() {
-    return this.tracksService.findAll();
+  findAll(@Query('_q') q: string, @Query('pageSize') pageSize: number, @Query('pageNumber') pageNumber: number) {
+    return this.tracksService.findAll({ q, pageSize, pageNumber });
   }
 
   @Get(':id')

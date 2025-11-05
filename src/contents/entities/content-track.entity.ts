@@ -12,7 +12,7 @@ export class ContentTrack {
     @PrimaryColumn({ name: 'id_track' })
     idTrack: number;
 
-    @Column({ nullable: false })
+    @Column({ nullable: true })
     position: number;
 
     @CreateDateColumn({ name: 'created_at' })

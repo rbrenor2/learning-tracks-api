@@ -12,12 +12,16 @@ import { TracksService } from 'src/tracks/tracks.service';
 import { buildDbErrorMessage, handleHttpError } from 'src/common/helpers/errors.helper';
 import { hasSpecialChars } from 'src/common/helpers/string.helper';
 import { CustomErrorMessages } from 'src/common/enums/custom-error-messages.enum';
+import { ContentsTracksService } from './contents-tracks.service';
+import { Track } from 'src/tracks/entities/track.entity';
 
 @Injectable()
 export class ContentsService {
   constructor(
     private youtubeService: YoutubeService,
     private trackService: TracksService,
+    private contentTrackService: ContentsTracksService,
+
     @InjectRepository(Content)
     private readonly repo: Repository<Content>,
     private dataSource: DataSource
@@ -32,21 +36,14 @@ export class ContentsService {
       duration: parsedDuration
     })
 
-    if (createContentDto.tracks) {
+    if (createContentDto.tracks && createContentDto.tracks.length > 0) {
       const foundSpecialChars = createContentDto.tracks.find((track: string) => hasSpecialChars(track))
       if (foundSpecialChars) handleHttpError(400, CustomErrorMessages.unallowedChars)
+      this.createWithTransaction(content, createContentDto.tracks)
     }
 
     try {
-      return await this.dataSource.transaction(async manager => {
-        const savedContent = await manager.save(Content, content)
-
-        if (createContentDto.tracks && createContentDto.tracks.length > 0) {
-          await this.trackService.createWithTransaction(createContentDto.tracks, manager)
-        }
-
-        return savedContent
-      })
+      return this.repo.save(content)
     } catch (error) {
       handleHttpError(409, buildDbErrorMessage(error))
     }
@@ -92,5 +89,27 @@ export class ContentsService {
     if (!affected) throw new NotFoundException()
 
     return;
+  }
+
+  async createWithTransaction(content: Content, tracks: string[]) {
+    try {
+      return await this.dataSource.transaction(async manager => {
+        const savedContent = await manager.save(Content, content)
+
+        if (tracks && tracks.length > 0) {
+          const savedTracks = await this.trackService.createWithTransaction(tracks, manager)
+          const savedTracksIds = savedTracks.identifiers.map((track: Partial<Track>) => track.id).filter((id: number | undefined) => id !== undefined)
+
+          if (savedTracksIds) {
+            const savedContentTracks = await this.contentTrackService.createWithTransaction(savedContent.id, savedTracksIds, manager)
+            console.log(savedContentTracks)
+          }
+        }
+
+        return savedContent
+      })
+    } catch (error) {
+      handleHttpError(409, buildDbErrorMessage(error))
+    }
   }
 }

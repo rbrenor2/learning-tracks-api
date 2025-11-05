@@ -14,19 +14,19 @@ export class ContentsService {
   constructor(
     private youtubeService: YoutubeService,
     @InjectRepository(Content)
-    private readonly contentRepository: Repository<Content>
+    private readonly repo: Repository<Content>
   ) { }
 
   async create(createContentDto: CreateContentDto) {
     const videoData = await this.youtubeService.fetchVideoData(createContentDto.videoId)
     const parsedDuration = parseISO8601ToSeconds(videoData.duration)
 
-    const content = this.contentRepository.create({
+    const content = this.repo.create({
       ...videoData,
       duration: parsedDuration
     })
 
-    return await this.contentRepository.save(content);
+    return await this.repo.save(content);
   }
 
   async findAll(dto: FindContentDto) {
@@ -37,7 +37,7 @@ export class ContentsService {
 
     const options = buildPaginationOptions({ pageNumber: dto.pageNumber, pageSize: dto.pageSize })
 
-    const [results, total] = await this.contentRepository.findAndCount(
+    const [results, total] = await this.repo.findAndCount(
       {
         where,
         take: options.take,
@@ -50,7 +50,7 @@ export class ContentsService {
   }
 
   async findOne(id: number) {
-    const result = await this.contentRepository.findOneBy({ id })
+    const result = await this.repo.findOneBy({ id })
 
     if (!result) {
       throw new NotFoundException()
@@ -64,7 +64,7 @@ export class ContentsService {
   }
 
   async remove(id: number) {
-    const { affected } = await this.contentRepository.delete(id)
+    const { affected } = await this.repo.delete(id)
 
     if (!affected) throw new NotFoundException()
 

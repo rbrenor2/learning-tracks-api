@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
-import { ILike, Repository } from 'typeorm';
+import { EntityManager, ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { buildDbErrorMessage, handleHttpError } from 'src/common/helpers/errors.helper';
 import { FindDto } from 'src/common/dto/find.dto';
@@ -19,9 +19,7 @@ export class TracksService {
   async create(createTrackDto: CreateTrackDto) {
     const foundSpecialChars = createTrackDto.find((track: string) => hasSpecialChars(track))
 
-    if (foundSpecialChars) {
-      handleHttpError(400, "Track contains unallowed characters")
-    }
+    if (foundSpecialChars) handleHttpError(400, "Track contains unallowed characters")
 
     const tracks = createTrackDto.map((track: string) => this.repo.create({ name: track }))
 
@@ -78,5 +76,16 @@ export class TracksService {
     if (!affected) handleHttpError(404, "Track not found")
 
     return;
+  }
+
+  async createWithTransaction(createTrackDto: CreateTrackDto, manager: EntityManager) {
+    const tracks = createTrackDto.map((track: string) => manager.create(Track, { name: track }))
+
+    const savedTracks = await manager.createQueryBuilder()
+      .insert()
+      .into(Track)
+      .values(tracks)
+      .execute()
+    return savedTracks
   }
 }

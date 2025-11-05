@@ -11,6 +11,7 @@ import { FindDto } from 'src/common/dto/find.dto';
 import { TracksService } from 'src/tracks/tracks.service';
 import { buildDbErrorMessage, handleHttpError } from 'src/common/helpers/errors.helper';
 import { hasSpecialChars } from 'src/common/helpers/string.helper';
+import { CustomErrorMessages } from 'src/common/enums/custom-error-messages.enum';
 
 @Injectable()
 export class ContentsService {
@@ -33,7 +34,7 @@ export class ContentsService {
 
     if (createContentDto.tracks) {
       const foundSpecialChars = createContentDto.tracks.find((track: string) => hasSpecialChars(track))
-      if (foundSpecialChars) handleHttpError(400, "Track contains unallowed characters")
+      if (foundSpecialChars) handleHttpError(400, CustomErrorMessages.unallowedChars)
     }
 
     try {

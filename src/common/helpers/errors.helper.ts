@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, ForbiddenException, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 
-export const handleHttpError = (statusCode: number, message: string) => {
+export const handleHttpError = (statusCode: number, message?: string) => {
     switch (statusCode) {
         case 400:
             throw new BadRequestException(message)

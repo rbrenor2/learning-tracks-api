@@ -8,6 +8,7 @@ import { buildDbErrorMessage, handleHttpError } from 'src/common/helpers/errors.
 import { FindDto } from 'src/common/dto/find.dto';
 import { buildPaginationOptions } from 'src/common/helpers/pagination.helper';
 import { hasSpecialChars } from 'src/common/helpers/string.helper';
+import { CustomErrorMessages } from 'src/common/enums/custom-error-messages.enum';
 
 @Injectable()
 export class TracksService {
@@ -19,7 +20,7 @@ export class TracksService {
   async create(createTrackDto: CreateTrackDto) {
     const foundSpecialChars = createTrackDto.find((track: string) => hasSpecialChars(track))
 
-    if (foundSpecialChars) handleHttpError(400, "Track contains unallowed characters")
+    if (foundSpecialChars) handleHttpError(400, CustomErrorMessages.unallowedChars)
 
     const tracks = createTrackDto.map((track: string) => this.repo.create({ name: track }))
 
@@ -54,7 +55,7 @@ export class TracksService {
     const result = await this.repo.findOneBy({ id })
 
     if (!result) {
-      handleHttpError(404, "Track not found")
+      handleHttpError(404)
     }
 
     return result;
@@ -65,7 +66,7 @@ export class TracksService {
       name: updateTrackDto.name
     })
 
-    if (!affected) handleHttpError(404, "Track not found")
+    if (!affected) handleHttpError(404)
 
     return;
   }
@@ -73,7 +74,7 @@ export class TracksService {
   async remove(id: number) {
     const { affected } = await this.repo.delete(id)
 
-    if (!affected) handleHttpError(404, "Track not found")
+    if (!affected) handleHttpError(404)
 
     return;
   }

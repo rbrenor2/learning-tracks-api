@@ -39,7 +39,7 @@ export class ContentsService {
     if (createContentDto.tracks && createContentDto.tracks.length > 0) {
       const foundSpecialChars = createContentDto.tracks.find((track: string) => hasSpecialChars(track))
       if (foundSpecialChars) handleHttpError(400, CustomErrorMessages.unallowedChars)
-      this.createWithTransaction(content, createContentDto.tracks)
+      return await this.createWithTransaction(content, createContentDto.tracks)
     }
 
     try {
@@ -102,7 +102,6 @@ export class ContentsService {
 
           if (savedTracksIds) {
             const savedContentTracks = await this.contentTrackService.createWithTransaction(savedContent.id, savedTracksIds, manager)
-            console.log(savedContentTracks)
           }
         }
 

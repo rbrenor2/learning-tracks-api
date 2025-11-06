@@ -101,7 +101,7 @@ export class ContentsService {
           const savedTracksIds = savedTracks.identifiers.map((track: Partial<Track>) => track.id).filter((id: number | undefined) => id !== undefined)
 
           if (savedTracksIds) {
-            const savedContentTracks = await this.contentTrackService.createWithTransaction(savedContent.id, savedTracksIds, manager)
+            await this.contentTrackService.createWithTransaction(savedContent.id, savedTracksIds, manager)
           }
         }
 

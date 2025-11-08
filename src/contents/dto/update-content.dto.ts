@@ -1,10 +1,22 @@
 import { IsOptional, IsArray, IsString, ArrayMinSize, IsBoolean } from "class-validator"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { CustomErrorMessages } from "src/common/enums/custom-error-messages.enum"
 
 export class UpdateContentDto {
+    @ApiProperty({
+        description: 'Mark content as completed or not completed',
+        example: true,
+        type: Boolean
+    })
     @IsBoolean({ message: CustomErrorMessages.completedMustBeBoolean })
     completed: boolean
 
+    @ApiPropertyOptional({
+        description: "Assign Tracks to this content. If they don't exist yet, they will be created.",
+        example: ['Advanced JavaScript', 'React Basics'],
+        type: [String],
+        minItems: 1
+    })
     @IsOptional()
     @IsArray({ message: CustomErrorMessages.tracksIsArray })
     @IsString({ each: true, message: CustomErrorMessages.trackMustBeString })

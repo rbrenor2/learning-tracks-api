@@ -1,7 +1,7 @@
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { INestApplication } from '@nestjs/common';
+import { AppModule } from './app.module';
 
 function setupOpenApi(app: INestApplication<any>) {
   const config = new DocumentBuilder()
@@ -20,7 +20,16 @@ function setupOpenApi(app: INestApplication<any>) {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  setupOpenApi(app)
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+
+  setupOpenApi(app);
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

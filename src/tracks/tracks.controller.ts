@@ -1,9 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
-import { TracksService } from './tracks.service';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import type { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { TracksService } from './tracks.service';
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
@@ -17,7 +27,11 @@ export class TracksController {
   }
 
   @Get()
-  findAll(@Query('_q') _q?: string, @Query('_pageSize') _pageSize?: number, @Query('_pageNumber') _pageNumber?: number) {
+  findAll(
+    @Query('_q') _q?: string,
+    @Query('_pageSize') _pageSize?: number,
+    @Query('_pageNumber') _pageNumber?: number,
+  ) {
     return this.tracksService.findAll({ _q, _pageSize, _pageNumber });
   }
 

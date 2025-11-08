@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { FindDto } from 'src/common/dto/find.dto';
+import { buildDbErrorMessage, handleHttpError } from 'src/common/helpers/errors.helper';
+import { buildPaginationOptions } from 'src/common/helpers/pagination.helper';
+import { EntityManager, ILike, Repository } from 'typeorm';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
-import { EntityManager, ILike, Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { buildDbErrorMessage, handleHttpError } from 'src/common/helpers/errors.helper';
-import { FindDto } from 'src/common/dto/find.dto';
-import { buildPaginationOptions } from 'src/common/helpers/pagination.helper';
-import { hasSpecialChars } from 'src/common/helpers/string.helper';
-import { CustomErrorMessages } from 'src/common/enums/custom-error-messages.enum';
 
 @Injectable()
 export class TracksService {
@@ -18,10 +16,6 @@ export class TracksService {
   ) { }
 
   async create({ names }: CreateTrackDto) {
-    const foundSpecialChars = names.find((track: string) => hasSpecialChars(track))
-
-    if (foundSpecialChars) handleHttpError(400, CustomErrorMessages.unallowedChars)
-
     const tracks = names.map((track: string) => this.repo.create({ name: track }))
 
     try {

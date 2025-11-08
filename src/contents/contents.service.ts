@@ -1,19 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateContentDto } from './dto/create-content.dto';
-import { UpdateContentDto } from './dto/update-content.dto';
-import { YoutubeService } from 'src/youtube/youtube.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Content } from './entities/content.entity';
-import { ILike, Repository, DataSource, EntityManager } from 'typeorm';
+import { FindDto } from 'src/common/dto/find.dto';
+import { buildDbErrorMessage, handleHttpError } from 'src/common/helpers/errors.helper';
 import { buildPaginationOptions } from 'src/common/helpers/pagination.helper';
 import { parseISO8601ToSeconds } from 'src/common/helpers/time.helper';
-import { FindDto } from 'src/common/dto/find.dto';
-import { TracksService } from 'src/tracks/tracks.service';
-import { buildDbErrorMessage, handleHttpError } from 'src/common/helpers/errors.helper';
-import { hasSpecialChars } from 'src/common/helpers/string.helper';
-import { CustomErrorMessages } from 'src/common/enums/custom-error-messages.enum';
-import { ContentsTracksService } from './contents-tracks.service';
 import { Track } from 'src/tracks/entities/track.entity';
+import { TracksService } from 'src/tracks/tracks.service';
+import { YoutubeService } from 'src/youtube/youtube.service';
+import { DataSource, EntityManager, ILike, Repository } from 'typeorm';
+import { ContentsTracksService } from './contents-tracks.service';
+import { CreateContentDto } from './dto/create-content.dto';
+import { UpdateContentDto } from './dto/update-content.dto';
+import { Content } from './entities/content.entity';
 
 @Injectable()
 export class ContentsService {
@@ -37,8 +35,6 @@ export class ContentsService {
     })
 
     if (tracks && tracks.length > 0) {
-      const foundSpecialChars = tracks.find((track: string) => hasSpecialChars(track))
-      if (foundSpecialChars) handleHttpError(400, CustomErrorMessages.unallowedChars)
       return await this.createWithTransaction(content, tracks)
     }
 
@@ -81,8 +77,6 @@ export class ContentsService {
 
   async update(id: number, { completed, tracks }: UpdateContentDto) {
     if (tracks) {
-      const foundSpecialChars = tracks.find((track: string) => hasSpecialChars(track))
-      if (foundSpecialChars) handleHttpError(400, CustomErrorMessages.unallowedChars)
       return await this.updateWithTransaction(id, completed, tracks)
     }
 

@@ -1,4 +1,5 @@
 import { BadRequestException, ConflictException, ForbiddenException, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { QueryFailedError } from "typeorm";
 
 export const handleHttpError = (statusCode: number, message?: string) => {
     switch (statusCode) {
@@ -15,8 +16,7 @@ export const handleHttpError = (statusCode: number, message?: string) => {
     }
 }
 
-export const buildDbErrorMessage = (error) => {
-    if (error.code && error.detail) return `${error.code} - ${error.detail}`
-
+export const buildDbErrorMessage = (error: QueryFailedError | string) => {
+    if (error instanceof QueryFailedError) return `${error.name} - ${error.message}`
     return error
 }

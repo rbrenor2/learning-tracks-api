@@ -65,7 +65,6 @@ export class TracksService {
     const { affected } = await this.repo.update({ id }, {
       name: updateTrackDto.name
     })
-
     if (!affected) handleHttpError(404)
 
     return;
@@ -82,11 +81,18 @@ export class TracksService {
   async createWithTransaction(createTrackDto: CreateTrackDto, manager: EntityManager) {
     const tracks = createTrackDto.map((track: string) => manager.create(Track, { name: track }))
 
-    const savedTracks = await manager.createQueryBuilder()
+    await manager.createQueryBuilder()
       .insert()
       .into(Track)
       .values(tracks)
+      .orIgnore()
       .execute()
-    return savedTracks
+
+    const allTrackIds = await manager.find(Track, {
+      where: createTrackDto.map(name => ({ name })),
+      select: ['id']
+    })
+
+    return allTrackIds
   }
 }

@@ -4,7 +4,7 @@ import { UpdateContentDto } from './dto/update-content.dto';
 import { YoutubeService } from 'src/youtube/youtube.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Content } from './entities/content.entity';
-import { ILike, Repository, DataSource } from 'typeorm';
+import { ILike, Repository, DataSource, EntityManager } from 'typeorm';
 import { buildPaginationOptions } from 'src/common/helpers/pagination.helper';
 import { parseISO8601ToSeconds } from 'src/common/helpers/time.helper';
 import { FindDto } from 'src/common/dto/find.dto';
@@ -27,8 +27,8 @@ export class ContentsService {
     private dataSource: DataSource
   ) { }
 
-  async create(createContentDto: CreateContentDto) {
-    const videoData = await this.youtubeService.fetchVideoData(createContentDto.videoId)
+  async create({ videoId, tracks }: CreateContentDto) {
+    const videoData = await this.youtubeService.fetchVideoData(videoId)
     const parsedDuration = parseISO8601ToSeconds(videoData.duration)
 
     const content = this.repo.create({
@@ -36,10 +36,10 @@ export class ContentsService {
       duration: parsedDuration
     })
 
-    if (createContentDto.tracks && createContentDto.tracks.length > 0) {
-      const foundSpecialChars = createContentDto.tracks.find((track: string) => hasSpecialChars(track))
+    if (tracks && tracks.length > 0) {
+      const foundSpecialChars = tracks.find((track: string) => hasSpecialChars(track))
       if (foundSpecialChars) handleHttpError(400, CustomErrorMessages.unallowedChars)
-      return await this.createWithTransaction(content, createContentDto.tracks)
+      return await this.createWithTransaction(content, tracks)
     }
 
     try {
@@ -79,8 +79,21 @@ export class ContentsService {
     return result;
   }
 
-  update(id: number, updateContentDto: UpdateContentDto) {
-    return `This action updates a #${id} content`;
+  async update(id: number, { completed, tracks }: UpdateContentDto) {
+    if (tracks) {
+      const foundSpecialChars = tracks.find((track: string) => hasSpecialChars(track))
+      if (foundSpecialChars) handleHttpError(400, CustomErrorMessages.unallowedChars)
+      return await this.updateWithTransaction(id, completed, tracks)
+    }
+
+    try {
+      const { affected } = await this.repo.update({ id }, {
+        completed
+      })
+      if (!affected) handleHttpError(404)
+    } catch (error) {
+      handleHttpError(409, buildDbErrorMessage(error))
+    }
   }
 
   async remove(id: number) {
@@ -91,24 +104,43 @@ export class ContentsService {
     return;
   }
 
-  async createWithTransaction(content: Content, tracks: string[]) {
+
+  private async updateWithTransaction(id: number, completed: boolean, tracks: string[]) {
+    try {
+      return await this.dataSource.transaction(async manager => {
+        await manager.update(Content, { id }, {
+          completed
+        })
+
+        const content = await this.findOne(id)
+        await this.createAndAssignTracksWithTransaction(content, tracks, manager)
+
+        return;
+      })
+    } catch (error) {
+      handleHttpError(409, buildDbErrorMessage(error))
+    }
+  }
+
+  private async createWithTransaction(content: Content, tracks: string[]) {
     try {
       return await this.dataSource.transaction(async manager => {
         const savedContent = await manager.save(Content, content)
-
-        if (tracks && tracks.length > 0) {
-          const savedTracks = await this.trackService.createWithTransaction(tracks, manager)
-          const savedTracksIds = savedTracks.identifiers.map((track: Partial<Track>) => track.id).filter((id: number | undefined) => id !== undefined)
-
-          if (savedTracksIds) {
-            await this.contentTrackService.createWithTransaction(savedContent.id, savedTracksIds, manager)
-          }
-        }
+        await this.createAndAssignTracksWithTransaction(savedContent, tracks, manager)
 
         return savedContent
       })
     } catch (error) {
       handleHttpError(409, buildDbErrorMessage(error))
+    }
+  }
+
+  private async createAndAssignTracksWithTransaction(content: Content, tracks: string[], manager: EntityManager) {
+    const saved = await this.trackService.createWithTransaction(tracks, manager)
+    const ids = saved.map((track: Partial<Track>) => track.id).filter((id: number | undefined) => id !== undefined)
+
+    if (ids) {
+      await this.contentTrackService.createWithTransaction(content.id, ids, manager)
     }
   }
 }

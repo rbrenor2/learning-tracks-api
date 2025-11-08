@@ -1,3 +1,4 @@
 export class UpdateContentDto {
-    isCompleted: boolean
+    completed: boolean
+    tracks?: string[]
 }

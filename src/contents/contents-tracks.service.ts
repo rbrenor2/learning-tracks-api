@@ -16,6 +16,7 @@ export class ContentsTracksService {
             .insert()
             .into(ContentTrack)
             .values(contentTracks)
+            .orIgnore()
             .execute()
 
         return savedContentTracks

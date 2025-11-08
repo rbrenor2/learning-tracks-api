@@ -15,6 +15,8 @@ export const handleHttpError = (statusCode: number, message?: string) => {
     }
 }
 
-export const buildDbErrorMessage = (error: { code: string, detail: string }) => {
-    return `${error.code} - ${error.detail}`
+export const buildDbErrorMessage = (error) => {
+    if (error.code && error.detail) return `${error.code} - ${error.detail}`
+
+    return error
 }

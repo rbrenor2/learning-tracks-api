@@ -3,7 +3,10 @@ import { TracksService } from './tracks.service';
 import type { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 @Controller('tracks')
 export class TracksController {
   constructor(private readonly tracksService: TracksService) { }
@@ -13,7 +16,6 @@ export class TracksController {
     return this.tracksService.create(createTrackDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get()
   findAll(@Query('_q') q: string, @Query('pageSize') pageSize: number, @Query('pageNumber') pageNumber: number) {
     return this.tracksService.findAll({ q, pageSize, pageNumber });

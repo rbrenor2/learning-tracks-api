@@ -8,6 +8,11 @@ function setupOpenApi(app: INestApplication<any>) {
     .setTitle('Learning Tracks API')
     .setDescription('This is the API that serves the Learning Tracks app')
     .setVersion('1.0')
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      in: 'header',
+    })
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);

@@ -17,7 +17,7 @@ export class TracksController {
   }
 
   @Get()
-  findAll(@Query('_q') _q: string, @Query('_pageSize') _pageSize: number, @Query('_pageNumber') _pageNumber: number) {
+  findAll(@Query('_q') _q?: string, @Query('_pageSize') _pageSize?: number, @Query('_pageNumber') _pageNumber?: number) {
     return this.tracksService.findAll({ _q, _pageSize, _pageNumber });
   }
 

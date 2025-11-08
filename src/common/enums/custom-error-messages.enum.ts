@@ -1,5 +1,17 @@
 export enum CustomErrorMessages {
     unallowedChars = "Track contains unallowed characters",
     invalidToken = "Invalid token",
-    invalidUsernameOrPassword = "Invalid email or password"
+    invalidUsernameOrPassword = "Invalid email or password",
+    emailIsRequired = "Email is required",
+    passwordIsRequired = "Password is required",
+    invalidEmailAddress = "Please provide a valid email address",
+    videoIdIsRequired = 'Video ID is required',
+    tracksIsArray = 'Tracks must be an array',
+    trackMustBeString = 'Each track must be a string',
+    atLeastOneTrack = 'At least one track is required when tracks are provided',
+    completedMustBeBoolean = 'Completed must be a boolean value',
+    trackNameIsRequired = 'Track name is required',
+    nameIsRequired = 'Name is required',
+    passwordMinLength = 'Password must be at least 8 characters long',
+    passwordMaxLength = 'Password must have maximum of 128 characters',
 }

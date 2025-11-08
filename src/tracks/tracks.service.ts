@@ -17,12 +17,12 @@ export class TracksService {
     private readonly repo: Repository<Track>
   ) { }
 
-  async create(createTrackDto: CreateTrackDto) {
-    const foundSpecialChars = createTrackDto.find((track: string) => hasSpecialChars(track))
+  async create({ names }: CreateTrackDto) {
+    const foundSpecialChars = names.find((track: string) => hasSpecialChars(track))
 
     if (foundSpecialChars) handleHttpError(400, CustomErrorMessages.unallowedChars)
 
-    const tracks = createTrackDto.map((track: string) => this.repo.create({ name: track }))
+    const tracks = names.map((track: string) => this.repo.create({ name: track }))
 
     try {
       await this.repo.createQueryBuilder().insert().values(tracks).execute();
@@ -78,8 +78,8 @@ export class TracksService {
     return;
   }
 
-  async createWithTransaction(createTrackDto: CreateTrackDto, manager: EntityManager) {
-    const tracks = createTrackDto.map((track: string) => manager.create(Track, { name: track }))
+  async createWithTransaction(names: string[], manager: EntityManager) {
+    const tracks = names.map((track: string) => manager.create(Track, { name: track }))
 
     await manager.createQueryBuilder()
       .insert()
@@ -89,7 +89,7 @@ export class TracksService {
       .execute()
 
     const allTrackIds = await manager.find(Track, {
-      where: createTrackDto.map(name => ({ name })),
+      where: names.map(name => ({ name })),
       select: ['id']
     })
 

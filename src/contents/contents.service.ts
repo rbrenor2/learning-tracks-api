@@ -49,13 +49,13 @@ export class ContentsService {
     }
   }
 
-  async findAll(dto: FindDto) {
-    const where = dto.q && dto.q.trim() !== '' ? [
-      { title: ILike(`%${dto.q}%`) },
-      { description: ILike(`%${dto.q}%`) },
+  async findAll({ _q, _pageNumber, _pageSize }: FindDto) {
+    const where = _q && _q.trim() !== '' ? [
+      { title: ILike(`%${_q}%`) },
+      { description: ILike(`%${_q}%`) },
     ] : undefined
 
-    const options = buildPaginationOptions({ pageNumber: dto.pageNumber, pageSize: dto.pageSize })
+    const options = buildPaginationOptions({ pageNumber: _pageNumber, pageSize: _pageSize })
 
     const [results, total] = await this.repo.findAndCount(
       {
@@ -118,6 +118,7 @@ export class ContentsService {
         return;
       })
     } catch (error) {
+
       handleHttpError(409, buildDbErrorMessage(error))
     }
   }

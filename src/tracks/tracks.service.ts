@@ -32,12 +32,12 @@ export class TracksService {
     return
   }
 
-  async findAll(dto: FindDto) {
-    const where = dto.q && dto.q.trim() !== '' ? [
-      { name: ILike(`%${dto.q}%`) },
+  async findAll({ _q, _pageNumber, _pageSize }: FindDto) {
+    const where = _q && _q.trim() !== '' ? [
+      { name: ILike(`%${_q}%`) },
     ] : undefined
 
-    const options = buildPaginationOptions({ pageNumber: dto.pageNumber, pageSize: dto.pageSize })
+    const options = buildPaginationOptions({ pageNumber: _pageNumber, pageSize: _pageSize })
 
     const [results, total] = await this.repo.findAndCount(
       {

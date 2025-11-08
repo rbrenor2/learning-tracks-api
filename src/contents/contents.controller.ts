@@ -17,8 +17,8 @@ export class ContentsController {
   }
 
   @Get()
-  findAll(@Query('_q') q: string, @Query('pageSize') pageSize: number, @Query('pageNumber') pageNumber: number) {
-    return this.contentsService.findAll({ q, pageSize, pageNumber });
+  findAll(@Query('_q') _q: string, @Query('_pageSize') _pageSize: number, @Query('_pageNumber') _pageNumber: number) {
+    return this.contentsService.findAll({ _q, _pageSize, _pageNumber });
   }
 
   @Get(':id')

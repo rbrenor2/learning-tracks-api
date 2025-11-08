@@ -23,7 +23,6 @@ export class TracksService {
     } catch (error) {
       handleHttpError(409, buildDbErrorMessage(error))
     }
-    return
   }
 
   async findAll({ _q, _pageNumber, _pageSize }: FindDto) {

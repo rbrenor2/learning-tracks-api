@@ -108,11 +108,8 @@ export class ContentsService {
 
         const content = await this.findOne(id)
         await this.createAndAssignTracksWithTransaction(content, tracks, manager)
-
-        return;
       })
     } catch (error) {
-
       handleHttpError(409, buildDbErrorMessage(error))
     }
   }

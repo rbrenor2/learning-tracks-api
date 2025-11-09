@@ -1,6 +1,7 @@
-import { IsNotEmpty, IsString } from "class-validator"
 import { ApiProperty } from "@nestjs/swagger"
-import { CustomErrorMessages } from "src/common/enums/custom-error-messages.enum"
+import { IsNotEmpty, IsString } from "class-validator"
+import { CustomErrorMessages } from "../../../common/enums/custom-error-messages.enum"
+import { NoSpecialChars } from "../../../common/validators/no-special-chars.validator"
 
 export class UpdateTrackDto {
     @ApiProperty({
@@ -11,5 +12,6 @@ export class UpdateTrackDto {
     })
     @IsNotEmpty({ message: CustomErrorMessages.trackNameIsRequired })
     @IsString()
+    @NoSpecialChars({ message: CustomErrorMessages.unallowedChars })
     name: string
 }

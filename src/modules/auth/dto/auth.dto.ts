@@ -1,6 +1,6 @@
-import { IsNotEmpty, IsString } from "class-validator"
 import { ApiProperty } from "@nestjs/swagger"
-import { CustomErrorMessages } from "src/common/enums/custom-error-messages.enum"
+import { IsNotEmpty, IsString } from "class-validator"
+import { CustomErrorMessages } from "../../../common/enums/custom-error-messages.enum"
 
 export class AuthDto {
     @ApiProperty({

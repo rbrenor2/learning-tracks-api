@@ -46,10 +46,7 @@ export class TracksService {
 
   async findOne(id: number) {
     const result = await this.repo.findOneBy({ id })
-
-    if (!result) {
-      handleHttpError(404)
-    }
+    if (!result) handleHttpError(404)
 
     return result;
   }

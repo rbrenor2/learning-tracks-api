@@ -29,7 +29,7 @@ It will be responsible for managing a few entities like:
 
 **New to this project?** Get up and running quickly with sample data:
 
-📋 **[Setup Guide](./SETUP_GUIDE.md)** - Complete setup instructions with one-command deployment
+**[Setup Guide](./SETUP_GUIDE.md)** - Complete setup instructions with one-command deployment
 
 ```bash
 # Quick setup with sample data
@@ -68,7 +68,7 @@ cp .env.example .env
 | `PORT`                 | Application port                           | `3000`                                         |
 | `NODE_ENV`             | Environment mode                           | `development`                                  |
 
-### 🔑 Getting API Keys
+### Getting API Keys
 
 **YouTube API Key** (Optional - for production video fetching):
 
@@ -122,7 +122,7 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## 🗃️ Database Management
+## Database Management
 
 ```bash
 # Seed database with sample data
@@ -135,8 +135,17 @@ $ npm run seed:clear
 $ npm run seed:reset
 ```
 
-## 📚 Documentation
+## Documentation
 
 - **[Setup Guide](./SETUP_GUIDE.md)** - Complete setup instructions for evaluators and developers
 - **[AI Usage Documentation](./docs/AI_USAGE.md)** - Guidelines and history of AI assistance in this project
 - **[API Documentation](http://localhost:3000/api)** - Interactive Swagger documentation (when running)
+
+## Next steps
+
+- Add unit tests to entities.
+- Add integration tests for the other modules like Auth and Users.
+- Implement the missing CRUD parts of the Users module.
+- Add tests for the Youtube service.
+- Add integration with OpenAI to, based on a topic the user wants to learn, suggest a complete Learning Track with content suggestion.
+- Add possibility to make a Learning Track public and share with friends.

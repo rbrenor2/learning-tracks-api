@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { ArrayMinSize, IsArray, IsBoolean, IsOptional, IsString } from "class-validator"
-import { CustomErrorMessages } from "src/common/enums/custom-error-messages.enum"
-import { NoSpecialChars } from "src/common/validators/no-special-chars.validator"
+import { CustomErrorMessages } from "../../../common/enums/custom-error-messages.enum"
+import { NoSpecialChars } from "../../../common/validators/no-special-chars.validator"
 
 export class UpdateContentDto {
     @ApiProperty({

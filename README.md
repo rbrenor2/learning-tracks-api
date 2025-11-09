@@ -25,9 +25,70 @@ It will be responsible for managing a few entities like:
 - `db/` – Database-related files, such as the `schema.dbml` diagram, migrations, or seed data.
 - `docs/` – Project **documentation**, including diagrams, usage guides, and the commit history correction file.
 
-## Environment
+## Quick Setup
 
-- Only the complete database url is needed in the following variable: DATABASE_URL
+**New to this project?** Get up and running quickly with sample data:
+
+📋 **[Setup Guide](./SETUP_GUIDE.md)** - Complete setup instructions with one-command deployment
+
+```bash
+# Quick setup with sample data
+npm run setup:full
+```
+
+This will automatically:
+
+- Start PostgreSQL database
+- Install dependencies
+- Seed with realistic sample data (users, tracks, contents)
+- Set up authentication-ready environment
+
+## ⚙️ Environment Configuration
+
+The application requires several environment variables for proper operation. Copy the example file and configure:
+
+```bash
+cp .env.example .env
+```
+
+### Required Variables
+
+| Variable                 | Description                          | Example                                                          |
+| ------------------------ | ------------------------------------ | ---------------------------------------------------------------- |
+| `DATABASE_URL`           | PostgreSQL connection string         | `postgresql://postgres:postgres@localhost:5432/learningtracksdb` |
+| `JWT_SECRET`             | Secret key for JWT token signing     | `your-super-secret-jwt-key-change-this-in-production`            |
+| `JWT_EXPIRES_IN_SECONDS` | JWT token expiration time in seconds | `900` (15 minutes)                                               |
+
+### Optional Variables
+
+| Variable               | Description                                | Default/Example                                |
+| ---------------------- | ------------------------------------------ | ---------------------------------------------- |
+| `YOUTUBE_API_KEY`      | YouTube Data API v3 key for video metadata | Required for fetching real video data          |
+| `YOUTUBE_API_BASE_URL` | YouTube API endpoint                       | `https://www.googleapis.com/youtube/v3/videos` |
+| `PORT`                 | Application port                           | `3000`                                         |
+| `NODE_ENV`             | Environment mode                           | `development`                                  |
+
+### 🔑 Getting API Keys
+
+**YouTube API Key** (Optional - for production video fetching):
+
+1. Visit [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select existing
+3. Enable **YouTube Data API v3**
+4. Create credentials → API Key
+5. Add the key to your `.env` file
+
+> **Note**: Without YouTube API key, the app uses mocked video data in development.
+
+### 🐳 Database Setup
+
+Using Docker (recommended):
+
+```bash
+docker-compose up -d postgres
+```
+
+Or use your own PostgreSQL instance and update the `DATABASE_URL` accordingly.
 
 ## Project setup
 
@@ -60,3 +121,22 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+
+## 🗃️ Database Management
+
+```bash
+# Seed database with sample data
+$ npm run seed
+
+# Clear all data from database
+$ npm run seed:clear
+
+# Reset database (clear + seed)
+$ npm run seed:reset
+```
+
+## 📚 Documentation
+
+- **[Setup Guide](./SETUP_GUIDE.md)** - Complete setup instructions for evaluators and developers
+- **[AI Usage Documentation](./docs/AI_USAGE.md)** - Guidelines and history of AI assistance in this project
+- **[API Documentation](http://localhost:3000/api)** - Interactive Swagger documentation (when running)

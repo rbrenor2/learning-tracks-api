@@ -5,6 +5,7 @@ import {
     ValidatorConstraint,
     ValidatorConstraintInterface,
 } from 'class-validator';
+import { CustomErrorMessages } from '../enums/custom-error-messages.enum';
 
 @ValidatorConstraint({ name: 'NoSpecialChars', async: false })
 export class NoSpecialCharsConstraint implements ValidatorConstraintInterface {
@@ -20,7 +21,7 @@ export class NoSpecialCharsConstraint implements ValidatorConstraintInterface {
     }
 
     defaultMessage(_args: ValidationArguments) {
-        return 'Track contains unallowed characters';
+        return CustomErrorMessages.unallowedChars;
     }
 }
 

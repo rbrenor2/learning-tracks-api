@@ -76,6 +76,67 @@ describe('NoSpecialCharsValidator', () => {
         });
     });
 
+    describe('validate - single string support', () => {
+        it('should return true for valid single string without special characters', () => {
+            const validString = 'JavaScript Basics';
+            const result = validator.validate(validString, mockArgs);
+
+            expect(result).toBe(true);
+        });
+
+        it('should return true for single string with allowed characters (letters, numbers, spaces)', () => {
+            const validString = 'React 18 Tutorial';
+            const result = validator.validate(validString, mockArgs);
+
+            expect(result).toBe(true);
+        });
+
+        it('should return false for single string with special characters', () => {
+            const invalidString = 'React@Tutorial';
+            const result = validator.validate(invalidString, mockArgs);
+
+            expect(result).toBe(false);
+        });
+
+        it('should return true for empty string', () => {
+            const emptyString = '';
+            const result = validator.validate(emptyString, mockArgs);
+
+            expect(result).toBe(true);
+        });
+
+        it('should test all forbidden special characters in single strings', () => {
+            const specialChars = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '=', '[', ']', '{', '}', ';', "'", ':', '"', '\\', '|', ',', '.', '<', '>', '/', '?', '~', '`'];
+
+            specialChars.forEach(char => {
+                const stringWithSpecialChar = `Track with ${char} character`;
+                const result = validator.validate(stringWithSpecialChar, mockArgs);
+                expect(result).toBe(false);
+            });
+        });
+
+        it('should return true for single string with unicode characters', () => {
+            const unicodeString = 'JavaScript 基础教程';
+            const result = validator.validate(unicodeString, mockArgs);
+
+            expect(result).toBe(true);
+        });
+
+        it('should return true for single string with emoji', () => {
+            const emojiString = '🚀 React Tutorial';
+            const result = validator.validate(emojiString, mockArgs);
+
+            expect(result).toBe(true);
+        });
+
+        it('should return false for single string with multiple special characters', () => {
+            const invalidString = 'React@Tutorial#2024!';
+            const result = validator.validate(invalidString, mockArgs);
+
+            expect(result).toBe(false);
+        });
+    });
+
     describe('defaultMessage', () => {
         it('should return correct error message', () => {
             const message = validator.defaultMessage(mockArgs);

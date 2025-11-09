@@ -18,5 +18,6 @@ export const handleHttpError = (statusCode: number, message?: string) => {
 
 export const buildDbErrorMessage = (error: unknown): string => {
     if (error instanceof QueryFailedError) return `${error.name} - ${error.message}`
+    if (error instanceof Error) return error.message
     return ""
 }

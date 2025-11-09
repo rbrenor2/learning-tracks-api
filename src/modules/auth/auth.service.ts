@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
-import { UsersService } from 'src/users/users.service';
-import { AuthDto } from './dto/auth.dto';
-import { handleHttpError } from 'src/common/helpers/errors.helper';
-import { CustomErrorMessages } from 'src/common/enums/custom-error-messages.enum';
 import * as bcrypt from 'bcrypt';
+import { CustomErrorMessages } from 'src/common/enums/custom-error-messages.enum';
+import { handleHttpError } from 'src/common/helpers/errors.helper';
+import { UsersService } from 'src/modules/users/users.service';
+import { AuthDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {

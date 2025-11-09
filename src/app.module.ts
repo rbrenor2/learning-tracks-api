@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { ContentsModule } from './contents/contents.module';
-import { TracksModule } from './tracks/tracks.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { ContentTrack } from './contents/entities/content-track.entity';
-import { Content } from './contents/entities/content.entity';
-import { Track } from './tracks/entities/track.entity';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { User } from './users/entities/user.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './modules/auth/auth.module';
+import { ContentsModule } from './modules/contents/contents.module';
+import { ContentTrack } from './modules/contents/entities/content-track.entity';
+import { Content } from './modules/contents/entities/content.entity';
+import { Track } from './modules/tracks/entities/track.entity';
+import { TracksModule } from './modules/tracks/tracks.module';
+import { User } from './modules/users/entities/user.entity';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [ContentsModule, TracksModule,
